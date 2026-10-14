@@ -30,19 +30,34 @@ test('PLATEAU resources remain inside the selected package and official hosts', 
   assert.throws(() => tiles.resolve('https://elsewhere.invalid/tile.glb'));
 });
 
-test('catalog search returns selectable GML and Tiles without downloading models', async () => {
+test('catalog search resolves municipality names, codes and meshes without downloading models', async () => {
   const originalFetch = globalThis.fetch;
   const calls = [];
   try {
     globalThis.fetch = async (url, options) => {
       calls.push(url);
       assert.equal(options.redirect, 'error');
-      if (url.endsWith('mm:53394653')) return Response.json({ cities: [{ cityName: 'Taito', files: { ubld: [{ code: '53394653', maxLod: 4, url: file }] }, featureTypes: { ubld: { name: 'Underground' } } }] });
+      if (url.endsWith('mm:53394653') || url.endsWith('/13104')) return Response.json({ cities: [{ cityName: 'Shinjuku', files: { ubld: [{ code: '53394653', maxLod: 4, url: file }] }, featureTypes: { ubld: { name: 'Underground' } } }] });
+      if (url.endsWith('/datacatalog/graphql')) {
+        assert.equal(options.method, 'POST');
+        assert.equal(options.headers['Content-Type'], 'application/json');
+        assert.equal(JSON.parse(options.body).variables.name, '新宿');
+        return Response.json({ data: { areas: [{ name: '新宿区', code: '13104' }, { name: '新宿町', code: '12345' }] } });
+      }
+      assert.ok(url.endsWith('/datacatalog/plateau-datasets'));
       return Response.json({ latest_datasets: [{ city_code: '13106', format: '3D Tiles', name: 'Buildings', lod: '2', url: tile }, { city_code: '13101', format: '3D Tiles', url: tile }] });
     };
     assert.deepEqual((await searchPlateau('gml', '53394653')).map(item => item.url), [file]);
     assert.deepEqual((await searchPlateau('tiles', '13106')).map(item => item.url), [tile]);
-    await assert.rejects(searchPlateau('gml', '13106'), /8-digit/);
-    assert.equal(calls.length, 2);
+    assert.deepEqual(await searchPlateau('gml', '新宿'), [
+      { kind: 'area', code: '13104', label: '新宿区 · 13104' },
+      { kind: 'area', code: '12345', label: '新宿町 · 12345' },
+    ]);
+    assert.deepEqual((await searchPlateau('gml', '13104')).map(item => item.url), [file]);
+    assert.equal((await searchPlateau('tiles', '新宿'))[0].code, '13104');
+    await assert.rejects(searchPlateau('gml', '123'), /8-digit/);
+    assert.equal(calls.length, 5);
+    globalThis.fetch = async () => Response.json({ data: { areas: [null] } });
+    await assert.rejects(searchPlateau('gml', '新宿'), /Invalid PLATEAU municipality response/);
   } finally { globalThis.fetch = originalFetch; }
 });

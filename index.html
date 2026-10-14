@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' data: blob: https://api.plateauview.mlit.go.jp https://assets.cms.plateau.reearth.io; img-src 'self' data: blob: https://assets.cms.plateau.reearth.io; worker-src 'self' blob:; object-src 'none'; base-uri 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Wireframe viewer for local files or selected PLATEAU datasets">
+  <link rel="stylesheet" href="/src/style.css">
   <title>PLATEAU Wireframe Viewer</title>
 </head>
 <body>
@@ -23,10 +24,10 @@
   </nav>
   <dialog id="plateauDialog" aria-labelledby="plateauTitle">
     <h2 id="plateauTitle">Browse PLATEAU online</h2>
-    <p>Press Enter to search. Selecting a result downloads it directly to your browser; local file mode remains offline.</p>
+    <p>Search by municipality name or code. Select a municipality if prompted, then a model to download. Local file mode remains offline.</p>
     <form id="plateauSearch">
       <label for="plateauKind">Format</label><select id="plateauKind"><option value="gml">CityGML</option><option value="tiles">3D Tiles</option></select>
-      <label id="plateauCodeLabel" for="plateauCode">8-digit mesh code</label><input id="plateauCode" inputmode="numeric" placeholder="53394653" required>
+      <label id="plateauCodeLabel" for="plateauCode">Municipality name, city code or mesh code</label><input id="plateauCode" placeholder="新宿 or 53394536" required>
     </form>
     <p id="plateauMessage" role="status" aria-live="polite"></p>
     <div id="plateauResults" aria-label="PLATEAU search results"></div>

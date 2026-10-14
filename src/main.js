@@ -6,7 +6,6 @@ import { createFileSource } from './source.js';
 import { createPlateauSource, searchPlateau } from './plateau.js';
 import { fitModel, createBirdOrbit } from './camera.js';
 import { surfaces, palette } from './palette.js';
-import './style.css';
 
 const $ = id => document.getElementById(id);
 const errorMessage = error => error?.message || error?.error || String(error);
@@ -123,15 +122,14 @@ async function start() {
   $('plateauKind').addEventListener('change', () => {
     searchController?.abort();
     const gml = $('plateauKind').value === 'gml';
-    $('plateauCodeLabel').textContent = gml ? '8-digit mesh code' : '5-digit municipality code';
-    $('plateauCode').placeholder = gml ? '53394653' : '13106';
+    $('plateauCodeLabel').textContent = gml ? 'Municipality name, city code or mesh code' : 'Municipality name or city code';
+    $('plateauCode').placeholder = gml ? '新宿 or 53394536' : '新宿 or 13104';
     $('plateauCode').value = '';
     $('plateauResults').replaceChildren();
     $('plateauMessage').textContent = '';
   });
   $('plateauCode').addEventListener('input', () => { searchController?.abort(); $('plateauResults').replaceChildren(); $('plateauMessage').textContent = ''; });
-  $('plateauSearch').addEventListener('submit', async event => {
-    event.preventDefault();
+  async function showPlateauResults(code) {
     searchController?.abort();
     const request = new AbortController();
     searchController = request;
@@ -139,14 +137,19 @@ async function start() {
     $('plateauMessage').dataset.error = 'false';
     $('plateauMessage').textContent = 'Searching PLATEAU…';
     try {
-      const results = await searchPlateau($('plateauKind').value, $('plateauCode').value.trim(), request.signal);
+      const results = await searchPlateau($('plateauKind').value, code, request.signal);
       if (request.signal.aborted) return;
-      $('plateauMessage').textContent = results.length ? `${results.length} results. Select a model to download.` : 'No matching files.';
+      $('plateauMessage').textContent = results.length ? `${results.length} results. Select ${results[0].kind === 'area' ? 'a municipality' : 'a model to download'}.` : 'No matching results.';
       for (const result of results) {
         const button = document.createElement('button');
         button.type = 'button';
         button.textContent = result.label;
         button.addEventListener('click', () => {
+          if (result.kind === 'area') {
+            $('plateauCode').value = result.code;
+            showPlateauResults(result.code);
+            return;
+          }
           try {
             const selected = createPlateauSource(result.url, result.kind, result.label);
             resetModel();
@@ -158,12 +161,16 @@ async function start() {
             $('plateauDialog').close();
             loadSelectedModel();
           } catch (error) { $('plateauMessage').dataset.error = 'true'; $('plateauMessage').textContent = errorMessage(error); }
-  });
+        });
         $('plateauResults').append(button);
       }
     } catch (error) {
       if (!request.signal.aborted) { $('plateauMessage').dataset.error = 'true'; $('plateauMessage').textContent = errorMessage(error); }
     }
+  }
+  $('plateauSearch').addEventListener('submit', event => {
+    event.preventDefault();
+    showPlateauResults($('plateauCode').value.trim());
   });
   $('mainFile').addEventListener('change', () => {
     const file = $('mainFile').files[0];

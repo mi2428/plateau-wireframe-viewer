@@ -349,7 +349,12 @@ try {
     if (url.startsWith(`http://127.0.0.1:${server.address().port}/`) || url.startsWith('data:') || url.startsWith('blob:')) return route.continue();
     remote.push(url);
     const headers = { 'access-control-allow-origin': '*' };
-    if (url === `${api}/datacatalog/citygml/mm:53394653`) return route.fulfill({ headers, json: { cities: [{ cityName: 'Test', featureTypes: { bldg: { name: 'Buildings' } }, files: { bldg: [{ code: '53394653', maxLod: 2, url: `${root}sample.gml` }] } }] } });
+    if (url === `${api}/datacatalog/graphql`) {
+      if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: { ...headers, 'access-control-allow-methods': 'POST', 'access-control-allow-headers': 'content-type' } });
+      assert.equal(route.request().postDataJSON().variables.name, '新宿');
+      return route.fulfill({ headers, json: { data: { areas: [{ name: '新宿区', code: '13104' }] } } });
+    }
+    if (url === `${api}/datacatalog/citygml/mm:53394653` || url === `${api}/datacatalog/citygml/13104`) return route.fulfill({ headers, json: { cities: [{ cityName: 'Test', featureTypes: { bldg: { name: 'Buildings' } }, files: { bldg: [{ code: '53394653', maxLod: 2, url: `${root}sample.gml` }] } }] } });
     if (url === `${api}/datacatalog/plateau-datasets`) return route.fulfill({ headers, json: { latest_datasets: [{ city_code: '13106', format: '3D Tiles', name: 'Test tiles', lod: '2', url: `${api}/datacatalog/3dtiles/13106-bldg-lod2-latest/tileset.json` }] } });
     if (url === `${api}/datacatalog/3dtiles/13106-bldg-lod2-latest/tileset.json`) {
       const tileset = JSON.parse(await readFile('test/fixtures/tiles/tileset.json', 'utf8'));
@@ -398,6 +403,15 @@ try {
   await page.locator('#plateauResults button').first().click();
   await page.waitForFunction(() => document.querySelector('#status').textContent.startsWith('Viewing:'));
   assert.ok(remote.includes(`${root}sample.gml`));
+  await page.locator('#plateauBtn').click();
+  await page.locator('#plateauCode').fill('新宿');
+  await page.locator('#plateauCode').press('Enter');
+  await page.getByRole('button', { name: '新宿区 · 13104' }).click();
+  assert.equal(await page.locator('#plateauCode').inputValue(), '13104');
+  await page.locator('#plateauResults button').first().waitFor();
+  assert.ok(remote.includes(`${api}/datacatalog/citygml/13104`));
+  await page.locator('#plateauResults button').first().click();
+  await page.waitForFunction(() => document.querySelector('#status').textContent.startsWith('Viewing:'));
   await page.locator('#plateauBtn').click();
   await page.locator('#plateauKind').selectOption('tiles');
   await page.locator('#plateauCode').fill('13106');

@@ -52,10 +52,23 @@ export function createPlateauSource(value, kind, name) {
 }
 
 export async function searchPlateau(kind, code, signal) {
-  if (kind === 'gml' && !/^\d{8}$/.test(code)) throw new Error('Enter an 8-digit mesh code.');
-  if (kind === 'tiles' && !/^\d{5}$/.test(code)) throw new Error('Enter a 5-digit municipality code.');
   if (!['gml', 'tiles'].includes(kind)) throw new Error('Choose CityGML or 3D Tiles.');
-  const endpoint = kind === 'gml' ? `${catalog}/datacatalog/citygml/mm:${code}` : `${catalog}/datacatalog/plateau-datasets`;
+  if (!code.trim()) throw new Error('Enter a municipality name or code.');
+  if (!/^\d+$/.test(code)) {
+    const response = await fetch(`${catalog}/datacatalog/graphql`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: 'query($name: String!) { areas(input: { searchTokens: [$name], areaTypes: [CITY] }) { code name } }', variables: { name: code } }),
+      signal, redirect: 'error',
+    });
+    if (!response.ok) throw new Error(`PLATEAU catalog failed (${response.status}).`);
+    const data = await response.json();
+    signal?.throwIfAborted();
+    if (!Array.isArray(data?.data?.areas) || data.errors?.length || data.data.areas.some(area => !area || !/^\d{5}$/.test(area.code) || typeof area.name !== 'string' || !area.name.trim())) throw new Error('Invalid PLATEAU municipality response.');
+    return data.data.areas.map(area => ({ kind: 'area', code: area.code, label: `${area.name} · ${area.code}` }));
+  }
+  if (kind === 'gml' && !/^(?:\d{5}|\d{8})$/.test(code)) throw new Error('Enter a 5-digit municipality or 8-digit mesh code.');
+  if (kind === 'tiles' && !/^\d{5}$/.test(code)) throw new Error('Enter a 5-digit municipality code.');
+  const endpoint = kind === 'gml' ? `${catalog}/datacatalog/citygml/${code.length === 8 ? `mm:${code}` : code}` : `${catalog}/datacatalog/plateau-datasets`;
   const response = await fetch(endpoint, { signal, redirect: 'error' });
   if (!response.ok) throw new Error(`PLATEAU catalog failed (${response.status}).`);
   const data = await response.json();
