@@ -1,44 +1,32 @@
 # PLATEAU Wireframe Viewer
 
-View 3D city models as wireframes in your browser.
-[Project PLATEAU](https://www.mlit.go.jp/plateau/) is a Japanese Ministry of Land, Infrastructure, Transport and Tourism initiative to develop and release 3D city models. Choose CityGML or 3D Tiles from the public PLATEAU catalog, or open a local file.
-Model data is loaded in your browser, not uploaded to the app's server.
+Explore 3D city models from Japan's [Project PLATEAU](https://www.mlit.go.jp/plateau/) as wireframes in your browser.
+Search public CityGML and 3D Tiles or open local files; model data loads directly in your browser without being uploaded to the app's server.
 
 ![](https://raw.githubusercontent.com/mi2428/plateau-wireframe-viewer/demo/underground-light.gif)
 ![](https://raw.githubusercontent.com/mi2428/plateau-wireframe-viewer/demo/ground-dark.gif)
 
-## Using the website
+## Usage
 
-### Search PLATEAU datasets
+### Browse online models
 
-1. [Open the viewer](https://mi2428.github.io/plateau-wireframe-viewer/) and click the magnifying glass in the top-left corner.
-2. Choose `CityGML` or `3D Tiles` under `Format`. Enter a municipality name (for example, `新宿`) or a five-digit municipality code (for example, `13104`), then press **Enter**. There is no separate Search button.
-3. If you searched by name, select a municipality from the results, then select a model. It downloads directly from PLATEAU to your browser. Online search and loading require an internet connection.
+1. [Open the viewer](https://mi2428.github.io/plateau-wireframe-viewer/) and click the magnifying glass.
+2. Choose `CityGML` or `3D Tiles`, enter a municipality name (`新宿`) or five-digit code (`13104`), and press **Enter**.
+3. If you searched by name, select the municipality, then a model.
+   The viewer queries the PLATEAU API and downloads the model directly to your browser; an internet connection is required.
 
-For `CityGML`, you can also search directly by an eight-digit mesh code (for example, `53394653`). Mesh codes are not supported for `3D Tiles`. Available models and areas depend on the catalog.
+Codes are optional when searching by name: municipality results display the five-digit code, which you can also look up on [e-Stat](https://www.e-stat.go.jp/municipalities/cities/areacode).
+For `CityGML` only, you can search by an eight-digit mesh code (`53394653`); find it in the model results or as the first eight digits of CityGML filenames in [PLATEAU Open Data](https://www.mlit.go.jp/plateau/open-data/).
 
-### Find a municipality or mesh code
+### Open local models
 
-- **Municipality code (five digits):** Search by name in the viewer; municipality results show the code alongside the name. Alternatively, enter the name on the government statistics portal's [municipality search page (e-Stat)](https://www.e-stat.go.jp/municipalities/cities/areacode) and read the five-digit standard region code (`標準地域コード`) in the results. You do not need a code to search by name.
-- **Mesh code (eight digits, CityGML only):** Select a municipality in the viewer; CityGML model results include their mesh codes. You can also look up a CityGML filename for the area in [PLATEAU Open Data](https://www.mlit.go.jp/plateau/open-data/): the first eight digits of `53394653_ubld_6697_op.gml`, for example, are its mesh code. See the [Statistics Bureau's guide to regional meshes](https://www.stat.go.jp/data/mesh/m_tuite.html) for the code system.
+Click the folder icon to open your own CityGML (`.gml`, `.citygml`, `.xml`) or 3D Tiles (`tileset.json`), including non-PLATEAU models.
+Extract ZIP archives first; if a referenced file is missing, select the extracted folder containing the same root file when prompted.
+Local models work offline once the app is available.
 
-### Open a local file
+With either source, drag to orbit, right-drag to pan, and use the wheel or pinch to zoom.
+The corner controls change the theme, view, projection, automatic orbit, and CityGML LOD; × cancels loading or closes the model.
 
-Click the folder icon in the top-left corner and choose a `.gml`, `.citygml`, `.xml`, or 3D Tiles `tileset.json` file. Extract ZIP archives first. If a referenced file is missing, use the folder icon that appears to select the extracted folder containing the same root file. Local files can be viewed offline once the app is available.
+## License
 
-### Navigate the model
-
-Drag to orbit, right-drag to pan, and use the wheel or pinch to zoom. Switch themes at the top left. The `GML LOD` controls at the top right select the level of detail for CityGML (`Auto` shows the highest LOD per feature; `All` overlaps every LOD). The bottom-left controls fit the model, switch between isometric and top views or perspective and orthographic projection, and start an automatic orbit. Use the × button to cancel loading or close the model.
-
-## Run locally
-
-Requires Node.js 22.12 or later:
-
-```sh
-npm ci
-npm run dev
-```
-
-Open `http://127.0.0.1:5173/` in your browser.
-
-Software and decoder notices are in `public/NOTICE.txt`. This app is licensed under [MIT](LICENSE).
+This app is licensed under [MIT](LICENSE).
