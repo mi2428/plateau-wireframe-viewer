@@ -1,0 +1,21 @@
+Software notices
+
+Third-party software:
+- Three.js: MIT, https://github.com/mrdoob/three.js
+- 3d-tiles-renderer: Apache-2.0, https://github.com/NASA-AMMOS/3DTilesRendererJS
+- Proj4js: MIT, https://github.com/proj4js/proj4js
+- copc.js: MIT, Copyright Connor Manning, https://github.com/connormanning/copc.js
+- @voxelkloud/wasm-codecs: MIT, Copyright (c) 2026 Tiago PlanteAI, https://github.com/voxelkloud/wasm-codecs
+- laz-rs (statically linked in the LAZ WASM): Apache-2.0, Copyright Thomas Montaigu, https://github.com/tmontaigu/laz-rs
+- cdt2d: MIT, Copyright Mikola Lysenko, https://github.com/mikolalysenko/cdt2d
+- @xmldom/xmldom (development check only): MIT, https://github.com/xmldom/xmldom
+- Draco decoder: Apache-2.0, Copyright Google, https://github.com/google/draco
+- Meshopt decoder / meshoptimizer: MIT, Copyright Arseny Kapoulkine, https://github.com/zeux/meshoptimizer
+- Basis Universal transcoder: Apache-2.0, Copyright Binomial LLC, https://github.com/BinomialLLC/basis_universal
+
+Full license texts for bundled JavaScript: third-party-licenses.md
+Bundled decoders retain the original copyright notices from Three.js and @voxelkloud/wasm-codecs.
+Apache-2.0 licenses for Draco and Basis: decoders/draco/LICENSE, decoders/basis/LICENSE
+LAZ wrapper MIT license: decoders/laz/LICENSE
+LAZ Rust dependency notices: decoders/laz/THIRD-PARTY-NOTICES.md
+laz-rs Apache-2.0 license: decoders/laz/LICENSE-APACHE-2.0

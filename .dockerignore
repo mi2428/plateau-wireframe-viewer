@@ -1,0 +1,9 @@
+.git
+node_modules
+dist
+data
+test
+public/decoders
+*.log
+.env*
+.DS_Store

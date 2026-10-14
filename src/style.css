@@ -1,0 +1,78 @@
+:root { color-scheme: dark; font: 13px system-ui, sans-serif; --text: #e6ecf1; --muted: #b5c4cf; --panel: #17222c; --stage: #101820; --border: #455562; --focus: #8dd3ef; --error: #ffadac; color: var(--text); background: var(--stage); }
+:root[data-theme=light] { color-scheme: light; --text: #1c2934; --muted: #405766; --panel: #f4f6f8; --stage: #fff; --border: #8797a1; --focus: #116a89; --error: #9c253b; }
+* { box-sizing: border-box; }
+body { margin: 0; height: 100dvh; overflow: hidden; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; background: var(--panel); border: 1px solid var(--border); border-radius: 5px; min-height: 40px; }
+button:disabled { opacity: .55; cursor: default; }
+button[aria-pressed=true] { background: color-mix(in srgb, var(--focus) 20%, var(--panel)); }
+:is(button, input, select, a):focus { outline: none; box-shadow: none; }
+:is(button, select, a):focus-visible { background: color-mix(in srgb, var(--focus) 45%, var(--panel)); }
+[hidden] { display: none !important; }
+#stage { position: fixed; inset: 0; background: var(--stage); }
+#canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.hud { position: absolute; z-index: 1; top: max(12px, env(safe-area-inset-top)); left: 215px; right: 320px; pointer-events: none; text-align: center; }
+.hud p { margin: 0 0 5px; font-size: 12px; overflow-wrap: anywhere; }
+#status[data-error=true] { color: var(--error); }
+#details { color: var(--muted); }
+.controls { position: fixed; z-index: 2; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 5px; }
+.files { top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left)); display: flex; gap: 3px; }
+.sun, :root[data-theme=light] #themeBtn .moon { display: none; }
+:root[data-theme=light] #themeBtn .sun { display: inline; }
+.icon-button { display: grid; place-items: center; width: 42px; height: 42px; padding: 8px; background: transparent; border-color: transparent; }
+.icon-button svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.views #birdBtn:disabled { opacity: 1; }
+.views, .lod { display: flex; }
+.views { bottom: max(12px, env(safe-area-inset-bottom)); left: max(12px, env(safe-area-inset-left)); flex-direction: column; gap: 2px; }
+.lod { top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); flex-direction: row; margin: 0; min-width: 0; max-width: calc(100vw - 24px); overflow-x: auto; }
+.lod legend { font-size: 11px; padding: 0 2px; }
+.lod label { position: relative; display: grid; place-items: center; min-width: 40px; min-height: 40px; cursor: pointer; border-radius: 4px; }
+.lod label:has(input:checked) { background: var(--focus); color: var(--stage); }
+.lod input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.lod label:has(input:focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
+.legend { bottom: max(12px, env(safe-area-inset-bottom)); right: max(12px, env(safe-area-inset-right)); width: 232px; max-height: min(400px, 46dvh, calc(100dvh - 435px)); overflow: auto; padding: 10px; font-size: 11px; }
+.legend h2 { font-size: 12px; margin: 0 0 6px; }
+.legend ul { columns: 2; list-style: none; padding: 0; margin: 0 0 6px; }
+.legend li { break-inside: avoid; margin-bottom: 5px; }
+.legend li::before { content: ''; display: inline-block; width: 10px; height: 10px; background: var(--swatch); margin-right: 5px; }
+.footer { position: fixed; z-index: 2; bottom: max(12px, env(safe-area-inset-bottom)); left: 12px; right: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--text); font-size: 12px; white-space: nowrap; }
+.footer small { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: inherit; }
+.footer a { color: inherit; flex: none; }
+#plateauDialog { color: var(--text); background: var(--panel); border: 1px solid var(--border); border-radius: 8px; width: min(460px, calc(100vw - 24px)); max-height: min(calc(100dvh - 24px), 640px); padding: 20px; overflow-x: hidden; overflow-y: auto; }
+#plateauDialog::backdrop { background: #0009; }
+#plateauDialog h2 { margin: 0 0 8px; }
+#plateauDialog > p:first-of-type { margin: 0 0 16px; line-height: 1.5; }
+#plateauDialog form { display: grid; gap: 6px; }
+#plateauDialog :is(input, select) { min-width: 0; width: 100%; min-height: 40px; padding: 8px 10px; background: var(--stage); border: 1px solid var(--border); border-radius: 5px; }
+#plateauDialog :is(input, select):focus-visible { background: color-mix(in srgb, var(--focus) 22%, var(--stage)); }
+#plateauKind { margin-bottom: 8px; }
+#plateauMessage { margin: 16px 0 8px; color: var(--muted); overflow-wrap: anywhere; }
+#plateauMessage[data-error=true] { color: var(--error); }
+#plateauMessage:empty, #plateauResults:empty { display: none; }
+#plateauResults { display: grid; gap: 6px; min-width: 0; }
+#plateauResults button { text-align: left; padding: 8px 10px; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 1120px) {
+  .footer { left: 80px; right: 256px; }
+}
+@media (max-width: 700px) {
+  .lod { top: calc(max(12px, env(safe-area-inset-top)) + 66px); }
+  .hud { top: calc(max(12px, env(safe-area-inset-top)) + 148px); left: 80px; right: 12px; text-align: left; }
+  .footer { right: 12px; bottom: calc(max(12px, env(safe-area-inset-bottom)) + min(208px, calc(100dvh - 423px))); }
+}
+@media (max-width: 520px) {
+  .legend { width: min(190px, calc(100vw - 100px)); max-height: max(80px, min(38dvh, calc(100dvh - 460px))); }
+  .legend ul { columns: 1; }
+  .footer { bottom: calc(max(12px, env(safe-area-inset-bottom)) + max(80px, min(38dvh, calc(100dvh - 460px))) + 12px); }
+}
+@media (max-height: 500px) {
+  .legend { max-height: min(130px, 32dvh); }
+  .footer { bottom: calc(max(12px, env(safe-area-inset-bottom)) + min(130px, 32dvh) + 12px); }
+}
+@media (max-height: 340px) {
+  .views { max-height: calc(100dvh - 114px); overflow-y: auto; }
+  .views .icon-button { height: 40px; min-height: 40px; }
+  .lod { max-width: calc(100vw - 90px); }
+  .hud { max-height: 26px; overflow-y: auto; pointer-events: auto; }
+  .legend { width: min(160px, calc(100vw - 155px)); max-height: 36px; }
+  .footer { bottom: calc(max(12px, env(safe-area-inset-bottom)) + 46px); }
+}

@@ -1,0 +1,1 @@
+{"asset":{"version":"1.1"},"geometricError":64,"root":{"boundingVolume":{"box":[0,0,6,30,0,0,0,30,0,0,0,20]},"geometricError":0,"refine":"REPLACE","transform":[6.123233995736766e-17,1,0,0,-1,6.123233995736766e-17,0,0,0,0,1,0,100,200,300,1],"contents":[{"uri":"external-left.json"},{"uri":"external-right"},{"uri":"draco.glb"}]}}

@@ -1,0 +1,12 @@
+services:
+  viewer:
+    build:
+      context: .
+      target: build
+    command: npm run dev -- --host 0.0.0.0
+    ports:
+      - "127.0.0.1:5173:5173"
+    volumes:
+      - ./src:/app/src:ro
+      - ./index.html:/app/index.html:ro
+      - ./vite.config.js:/app/vite.config.js:ro
