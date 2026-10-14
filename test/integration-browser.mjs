@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { chromium } from 'playwright';
 
 // Serve only dist/, never test fixtures or /data. One ephemeral port, owned and closed here.
-const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const types = { html: 'text/html', js: 'text/javascript', css: 'text/css', wasm: 'application/wasm', json: 'application/json', txt: 'text/plain' };
 const requests = [];
 const server = createServer(async (request, response) => {
